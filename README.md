@@ -232,9 +232,9 @@ The template represents the front-end part of the application. It is a file (e.g
 3. The `home` view function processes the request and renders the `home.html` template.
 4. The rendered HTML is returned to the client as the HTTP response and is displayed in the browser.
 
+---
 
-
-<b> Git in Software Development : 
+# Git in Software Development : 
 
 Git is a distributed version control system used to:
 
@@ -245,9 +245,8 @@ Git is a distributed version control system used to:
 
 Git is essential for collaborative software development, especially in open-source and CI/CD environments.
 
----
 
-<b>Why Django for Learning Software Development?
+# Why Django for Learning Software Development?
 
 Django is popular for beginners because:
 
@@ -257,9 +256,9 @@ Django is popular for beginners because:
 - It uses Python, an easy-to-learn language.
 - Django scales well and is used in real-world applications, offering valuable learning experiences.
 
----
 
-<b>Why is the Django Model Called an ORM?
+
+# Why is the Django Model Called an ORM?
 
 Django’s models are called an ORM (Object-Relational Mapping) because they map database tables to Python objects. The ORM allows developers to interact with the database using Python code instead of SQL, making database interactions easier and database-agnostic.
 
