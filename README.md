@@ -1,6 +1,4 @@
 
-<b>Step By Step Implementation : 
-
 # E-Commerce Django Project
 
 This README contains the step-by-step guide to set up a simple Django project with an e-commerce app.
@@ -168,7 +166,7 @@ python manage.py runserver
 Open your browser and go to `http://127.0.0.1:8000` to view your project!
 
 
-<b> Diagram and Explanation : 
+# Diagram and Explanation : 
 
 ![alt text](image.png)
 
