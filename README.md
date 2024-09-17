@@ -533,7 +533,7 @@ In summary, using `csrf_token` is essential for securing forms against CSRF atta
 
 ---
 ## Postman Screenshots : 
-![alt text](image-1.png)
+![alt text](image-5.png)
 ![alt text](image-2.png)
 ![alt text](image-3.png)
 ![alt text](image-4.png)
