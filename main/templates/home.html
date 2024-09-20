@@ -5,9 +5,19 @@
     <p>Developed by: {{ developer_name }}</p>
     <p>Class: {{ class_name }}</p>
 
-    <br />
-    <a href="{% url 'create_product' %}"><button>Add New Product</button></a>
+    <!-- Display logged-in user's username -->
+    <p>Logged in as: {{ username }}</p>
 
+    <!-- Add Product and Logout Buttons -->
+    <br />
+    <a href="{% url 'create_product' %}">
+        <button>Add New Product</button>
+    </a>
+    <a href="{% url 'logout' %}">
+        <button>Logout</button>
+    </a>
+
+    <!-- List of Products -->
     <h2>Products:</h2>
     {% if products %}
         <ul>
@@ -18,4 +28,7 @@
     {% else %}
         <p>No products available.</p>
     {% endif %}
+
+    <!-- Display Last Login Cookie -->
+    <h5>Last login session: {{ last_login }}</h5>
 {% endblock %}

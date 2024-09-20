@@ -537,3 +537,418 @@ In summary, using `csrf_token` is essential for securing forms against CSRF atta
 ![alt text](image-2.png)
 ![alt text](image-3.png)
 ![alt text](image-4.png)
+
+---
+# Assingment 3
+
+## 1. What is a UserCreationForm?
+
+The `UserCreationForm` is a form provided by Django’s authentication system, specifically designed to handle the registration of new users. It is part of `django.contrib.auth.forms`. This form includes fields for creating a new user, such as:
+- `username`
+- `password1` (with password validation)
+- `password2` 
+
+### Advantages:
+- **Pre-built and secure**: It includes built-in password hashing and validation, ensuring security.
+- **Simplicity**: Reduces the need to create user registration functionality from scratch.
+- **Customizable**: You can easily override or extend the form to add custom fields or validation rules.
+- **Integration with Django's Authentication System**: Seamlessly integrates with the authentication system, providing ease in managing user data.
+
+### Disadvantages:
+- **Limited out of the box**: The default form only includes basic fields, so additional customization is required if you want more user data during registration.
+- **Complexity with customization**: Overriding or adding custom validation can become complex if the default behavior doesn’t suit your needs.
+- **Coupled with Django’s built-in user model**: If you are using a custom user model, the default form may not cover all the necessary fields, requiring additional configuration.
+
+## 2. Difference Between Authentication and Authorization in Django
+
+- **Authentication**: Verifying if a user is who they claim to be. This is typically done through username and password, where the user provides credentials, and the system checks if they are correct.
+- **Authorization**: Determining what a user is allowed to do once authenticated. Django uses permissions and groups to manage what users can access, such as pages or resources on a site.
+
+### Importance of Both:
+- **Authentication**: Ensures that only legitimate users can access the system, preventing unauthorized individuals from gaining access.
+- **Authorization**: Restricts access to different parts of the system, ensuring authenticated users only interact with resources they are permitted to access.
+
+## 3. What are Cookies in Web Development?
+
+Cookies are small pieces of data that a server sends to a user's web browser. They are stored locally on the user's machine and are sent back to the server with each subsequent request. They are often used to maintain session state, user preferences, and other small bits of information.
+
+### Django’s Use of Cookies for Managing User Sessions:
+In Django, cookies manage user sessions. Specifically, the session framework stores session data on the server and uses cookies to track session IDs on the client side. When a user logs in, Django creates a session cookie that contains the session ID, corresponding to session data stored on the server.
+
+## 4. Are Cookies Safe by Default in Web Development?
+
+Cookies are generally safe when properly managed, but there are security risks:
+
+### Risks:
+- **Session Hijacking**: If an attacker gains access to a user's session cookie, they can impersonate that user.
+- **Cross-Site Scripting (XSS)**: An attacker could inject malicious scripts that steal session cookies if a website is vulnerable.
+- **Cross-Site Request Forgery (CSRF)**: Cookies can be exploited by attackers to perform unwanted actions on behalf of users.
+
+### Mitigation:
+- **Secure flag**: Ensures cookies are only sent over HTTPS, preventing interception over insecure connections.
+- **HttpOnly flag**: Prevents client-side scripts from accessing the cookie, reducing the risk of XSS attacks.
+- **SameSite attribute**: Helps protect against CSRF attacks by restricting when cookies are sent with cross-site requests.
+
+---
+# Step by Step
+
+
+### 1. Implementing User Registration
+
+#### a. Modify `views.py` for Registration
+
+Open `views.py` and import `UserCreationForm` and `messages`:
+
+```python
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib import messages
+from django.shortcuts import redirect
+```
+
+Add the `register` function to handle user registration:
+
+```python
+def register(request):
+    form = UserCreationForm()
+
+    if request.method == "POST":
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Your account has been successfully created!')
+            return redirect('login')
+    context = {'form': form}
+    return render(request, 'register.html', context)
+```
+
+#### b. Create `register.html` Template
+
+Create `register.html` in the `main/templates` directory with the following content:
+
+```html
+{% extends 'base.html' %}
+
+{% block meta %}
+<title>Register</title>
+{% endblock meta %}
+
+{% block content %}
+<div class="register">
+  <h1>Register</h1>
+
+  <form method="POST">
+    {% csrf_token %}
+    <table>
+      {{ form.as_table }}
+      <tr>
+        <td></td>
+        <td><input type="submit" name="submit" value="Register" /></td>
+      </tr>
+    </table>
+  </form>
+
+  {% if messages %}
+  <ul>
+    {% for message in messages %}
+    <li>{{ message }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+</div>
+{% endblock content %}
+```
+
+#### c. Add URL for Registration
+
+Open `urls.py` in the `main` subdirectory and add the import for `register`:
+
+```python
+from main.views import register
+```
+
+Add the URL path to `urlpatterns`:
+
+```python
+urlpatterns = [
+    ...
+    path('register/', register, name='register'),
+]
+```
+
+### 2. Implementing User Login
+
+#### a. Modify `views.py` for Login
+
+Import `AuthenticationForm`, `authenticate`, and `login` in `views.py`:
+
+```python
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import authenticate, login
+```
+
+Add the `login_user` function:
+
+```python
+def login_user(request):
+    if request.method == 'POST':
+        form = AuthenticationForm(data=request.POST)
+
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            return redirect('home')  # Redirect to home page after login
+    else:
+        form = AuthenticationForm()
+    context = {'form': form}
+    return render(request, 'login.html', context)
+```
+
+#### b. Create `login.html` Template
+
+Create `login.html` in the `main/templates` directory:
+
+```html
+{% extends 'base.html' %}
+
+{% block meta %}
+<title>Login</title>
+{% endblock meta %}
+
+{% block content %}
+<div class="login">
+  <h1>Login</h1>
+
+  <form method="POST">
+    {% csrf_token %}
+    <table>
+      {{ form.as_table }}
+      <tr>
+        <td></td>
+        <td><input class="btn login_btn" type="submit" value="Login" /></td>
+      </tr>
+    </table>
+  </form>
+
+  {% if messages %}
+  <ul>
+    {% for message in messages %}
+    <li>{{ message }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %} Don't have an account yet?
+  <a href="{% url 'register' %}">Register Now</a>
+</div>
+{% endblock content %}
+```
+
+#### c. Add URL for Login
+
+Open `urls.py` and add the import for `login_user`:
+
+```python
+from main.views import login_user
+```
+
+Add the URL path to `urlpatterns`:
+
+```python
+urlpatterns = [
+    ...
+    path('login/', login_user, name='login'),
+]
+```
+
+### 3. Implementing User Logout
+
+#### a. Modify `views.py` for Logout
+
+Import `logout` in `views.py`:
+
+```python
+from django.contrib.auth import logout
+```
+
+Add the `logout_user` function:
+
+```python
+def logout_user(request):
+    logout(request)
+    return redirect('login')  # Redirect to login page after logout
+```
+
+#### b. Add Logout Button to `home.html`
+
+Update `home.html` to include a logout button:
+
+```html
+<a href="{% url 'logout' %}">
+  <button>Logout</button>
+</a>
+```
+
+#### c. Add URL for Logout
+
+Open `urls.py` and add the import for `logout_user`:
+
+```python
+from main.views import logout_user
+```
+
+Add the URL path to `urlpatterns`:
+
+```python
+urlpatterns = [
+    ...
+    path('logout/', logout_user, name='logout'),
+]
+```
+
+### 4. Restricting Access to the Main Page
+
+#### a. Restrict Access to Views
+
+Import `login_required` in `views.py`:
+
+```python
+from django.contrib.auth.decorators import login_required
+```
+
+Apply the `@login_required` decorator to the `home` view:
+
+```python
+@login_required(login_url='/login')
+def home(request):
+    ...
+```
+
+### 5. Using Data from Cookies
+
+#### a. Modify `views.py` to Track Last Login
+
+Add the imports for `HttpResponseRedirect`, `reverse`, and `datetime`:
+
+```python
+import datetime
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+```
+
+Update the `login_user` function to set a cookie:
+
+```python
+if form.is_valid():
+    user = form.get_user()
+    login(request, user)
+    response = HttpResponseRedirect(reverse('home'))
+    response.set_cookie('last_login', str(datetime.datetime.now()))
+    return response
+```
+
+Update `home` to include last login data:
+
+```python
+def home(request):
+    products = Product.objects.filter(user=request.user)
+    context = {
+        'app_name': 'E-Commerce App',
+        'developer_name': 'Muhammad Raditya Indrastata Norman',
+        'class_name': 'KKI',
+        'products': products,
+        'last_login': request.COOKIES.get('last_login'),
+    }
+    return render(request, 'home.html', context)
+```
+
+Modify the `logout_user` function to delete the cookie:
+
+```python
+def logout_user(request):
+    logout(request)
+    response = HttpResponseRedirect(reverse('login'))
+    response.delete_cookie('last_login')
+    return response
+```
+
+#### b. Update `home.html` to Display Last Login
+
+Add the last login data display to `home.html`:
+
+```html
+<h5>Last login session: {{ last_login }}</h5>
+```
+
+### 6. Linking Products to Users
+
+#### a. Modify Product Model
+
+Open `models.py` and add the `User` model:
+
+```python
+from django.contrib.auth.models import User
+```
+
+Update the Product model to include a `ForeignKey` to User:
+
+```python
+class Product(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    name = models.CharField(max_length=255)
+    price = models.IntegerField()
+    description = models.TextField()
+```
+
+#### b. Update `create_product` Function
+
+Modify `views.py` to link the product to the logged-in user:
+
+```python
+def create_product(request):
+    form = ProductForm(request.POST or None)
+
+    if form.is_valid() and request.method == "POST":
+        product = form.save(commit=False)
+        product.user = request.user
+        product.save()
+        return redirect('home')
+
+    context = {'form': form}
+    return render(request, "create_product.html", context)
+```
+
+#### c. Filter Products by User in `home` View
+
+Modify the `home` view to show products related to the logged-in user:
+
+```python
+def home(request):
+    products = Product.objects.filter(user=request.user)
+    context = {
+        'app_name': 'E-Commerce App',
+        'developer_name': 'Muhammad Raditya Indrastata Norman',
+        'class_name': 'KKI',
+        'products': products,
+        'last_login': request.COOKIES.get('last_login'),
+    }
+    return render(request, 'home.html', context)
+```
+
+### 7. Run Migrations
+
+Run migrations to apply changes to the Product model:
+
+```bash
+python manage.py makemigrations
+python manage.py migrate
+```
+
+If prompted to provide a default user, choose an appropriate option (like selecting user ID 1).
+
+### 8. Test the Implementation
+
+Start the Django server:
+
+```bash
+python manage.py runserver
+```
+
+Test the registration, login, and product creation to ensure everything is linked to the user correctly.
