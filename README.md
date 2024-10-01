@@ -952,3 +952,342 @@ python manage.py runserver
 ```
 
 Test the registration, login, and product creation to ensure everything is linked to the user correctly.
+---
+# Assignment 5
+
+# CSS Selectors Priority Order
+
+When multiple CSS selectors target the same HTML element, the browser determines which one to apply based on specificity. The order of priority is as follows:
+
+1. **Inline Styles** (e.g., `style="color: red;"`) – Highest priority.
+2. **ID Selectors** (e.g., `#elementID`) – More specific than class or tag selectors.
+3. **Class, Attribute, and Pseudo-Class Selectors** (e.g., `.class`, `[attribute=value]`, `:hover`) – Less specific than IDs.
+4. **Tag and Pseudo-Element Selectors** (e.g., `div`, `p`, `:before`, `:after`) – Lowest priority.
+5. **Universal Selectors** (e.g., `*`) – Applies to all elements but has the lowest specificity.
+6. **!important** overrides – Any declaration with `!important` will override all other styles unless another `!important` is also applied with higher specificity.
+
+For example:
+```css
+#id-selector {
+  color: blue;
+}
+
+.class-selector {
+  color: green;
+}
+
+element-selector {
+  color: red;
+}
+
+<p id="id-selector" class="class-selector">This text will be blue due to higher specificity of the ID selector.</p>
+```
+
+# Why Responsive Design is Important
+
+Responsive design allows web applications to adapt seamlessly to different screen sizes, enhancing user experience across devices (desktop, tablet, smartphone). It's crucial because users now access the web on a variety of devices, and without responsive design, a website may look broken or difficult to use on smaller screens.
+
+### Examples of Applications:
+- **With Responsive Design**: 
+  - **Twitter**: Automatically adjusts its layout for mobile users, showing a simplified feed and easy-to-navigate interface.
+  - **Amazon**: Changes its navigation and content layout to fit different screen sizes.
+  
+- **Without Responsive Design**: 
+  - **Older Websites**: Many older websites built before responsive design practices may only cater to desktops, rendering poorly on mobile devices, forcing users to zoom and scroll horizontally.
+  - **Local Business Websites**: Some smaller businesses may not have updated their websites to be responsive, leading to a suboptimal experience on phones or tablets.
+
+# Margin, Border, and Padding
+
+In CSS, **margin**, **border**, and **padding** are used to create space around elements. Here’s the difference:
+
+1. **Margin**: Space outside the element's border. It creates space between the element and other elements.
+2. **Border**: A line around the element’s padding and content. It defines the edge of the element.
+3. **Padding**: Space inside the element, between the content and the border. It pushes the content away from the edges of the element.
+
+### Example Implementation:
+```css
+element {
+  margin: 20px;  /* Adds space outside the element */
+  border: 2px solid black;  /* Adds a solid black border */
+  padding: 10px;  /* Adds space inside the element */
+}
+```
+
+
+# Flexbox and Grid Layout
+
+## Flexbox
+
+Flexbox is a CSS layout module designed to distribute space and align items within a container. It is particularly useful for creating one-dimensional layouts, where you need to align items in a row or column.
+
+### Example Use:
+```css
+.container {
+  display: flex;
+  justify-content: center;  /* Centers items horizontally */
+  align-items: center;  /* Centers items vertically */
+}
+```
+In this example, all elements inside the `.container` will be centered both horizontally and vertically. Flexbox is ideal for layouts like navigation bars, footers, or simple content layouts where elements need to be aligned along a single axis.
+
+### Properties:
+- **justify-content**: Aligns items horizontally (start, center, end, space-around, space-between).
+- **align-items**: Aligns items vertically (stretch, center, baseline).
+- **flex-direction**: Specifies the direction (row or column).
+- **flex-wrap**: Determines if items should wrap or stay in a single line.
+
+## Grid Layout
+
+CSS Grid is a powerful two-dimensional layout system. It allows you to create complex layouts involving rows and columns.
+
+### Example Use:
+```css
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);  /* Creates 3 equal columns */
+  grid-gap: 10px;  /* Space between grid items */
+}
+
+.grid-item {
+  background-color: lightblue;
+}
+```
+
+### Properties:
+- **grid-template-columns**: Defines the number of columns.
+- **grid-template-rows**: Defines the number of rows.
+- **grid-gap**: Sets the space between rows and columns.
+- **grid-area**: Allows items to span across multiple rows or columns.
+
+CSS Grid is particularly useful for building more complex web layouts, such as a webpage’s overall structure with headers, sidebars, main content areas, and footers.
+
+### Flexbox vs Grid:
+- **Flexbox** is best for one-dimensional layouts (either row or column).
+- **Grid** is best for two-dimensional layouts (both rows and columns).
+---
+# Step by Step
+
+1. **User Authentication (Login & Register)**
+    - Implemented user login and registration using Django's built-in authentication system.
+    - Session management with cookies to store the last login time.
+
+### Login View
+
+```python
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.forms import AuthenticationForm
+
+def login_user(request):
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                login(request, user)
+                response = redirect('home')
+                response.set_cookie('last_login', str(datetime.datetime.now()))
+                return response
+    else:
+        form = AuthenticationForm()
+    return render(request, 'login.html', {'form': form})
+```
+
+### Register View
+
+```python
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login
+
+def register_user(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('home')
+    else:
+        form = UserCreationForm()
+    return render(request, 'register.html', {'form': form})
+```
+
+2. **URL Configuration**
+
+```python
+from django.urls import path
+from main.views import login_user, register_user
+from django.contrib.auth.views import LogoutView
+
+urlpatterns = [
+    path('login/', login_user, name='login'),
+    path('register/', register_user, name='register'),
+    path('logout/', LogoutView.as_view(next_page='login'), name='logout'),
+]
+```
+
+3. **HTML Templates for Login and Register**
+
+### Login Page (login.html)
+
+```html
+{% extends 'base.html' %}
+{% block content %}
+  <div class="min-h-screen flex items-center justify-center w-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8">
+      <h2 class="text-3xl font-extrabold text-center text-gray-900">Login to your account</h2>
+      <form method="POST" class="mt-8 space-y-6">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-md">Login</button>
+      </form>
+      <div class="text-center mt-4">
+        <p>Don't have an account? 
+          <a href="{% url 'register' %}" class="text-indigo-600 hover:text-indigo-800">Register Now</a>
+        </p>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+```
+
+### Register Page (register.html)
+
+```html
+{% extends 'base.html' %}
+{% block content %}
+  <div class="min-h-screen flex items-center justify-center w-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8">
+      <h2 class="text-3xl font-extrabold text-center text-gray-900">Create your account</h2>
+      <form method="POST" class="mt-8 space-y-6">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="w-full bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-md">Register</button>
+      </form>
+      <div class="text-center mt-4">
+        <p>Already have an account? 
+          <a href="{% url 'login' %}" class="text-indigo-600 hover:text-indigo-800">Login Here</a>
+        </p>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+```
+
+4. **Navbar Template (navbar.html)**
+
+```html
+<!-- navbar.html -->
+<nav class="bg-indigo-600 shadow-lg fixed top-0 left-0 z-40 w-screen">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <div class="flex items-center">
+          <h1 class="text-2xl font-bold text-center text-white">E-Shop</h1>
+        </div>
+        <div class="hidden md:flex items-center">
+          {% if user.is_authenticated %}
+            <span class="text-gray-300 mr-4">Welcome, {{ user.username }}</span>
+            <a href="{% url 'logout' %}" class="text-center bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition duration-300">
+              Logout
+            </a>
+          {% else %}
+            <a href="{% url 'login' %}" class="text-center bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition duration-300 mr-2">
+              Login
+            </a>
+            <a href="{% url 'register' %}" class="text-center bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition duration-300">
+              Register
+            </a>
+          {% endif %}
+        </div>
+        <div class="md:hidden flex items-center">
+          <button class="mobile-menu-button">
+            <svg class="w-6 h-6 text-white" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
+              <path d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- Mobile menu -->
+    <div class="mobile-menu hidden md:hidden px-4 w-full md:max-w-full">
+      <div class="pt-2 pb-3 space-y-1 mx-auto">
+        {% if user.is_authenticated %}
+          <span class="block text-gray-300 px-3 py-2">Welcome, {{ user.username }}</span>
+          <a href="{% url 'logout' %}" class="block text-center bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition duration-300">
+            Logout
+          </a>
+        {% else %}
+          <a href="{% url 'login' %}" class="block text-center bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition duration-300 mb-2">
+            Login
+          </a>
+          <a href="{% url 'register' %}" class="block text-center bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition duration-300">
+            Register
+          </a>
+        {% endif %}
+      </div>
+    </div>
+    <script>
+      const btn = document.querySelector("button.mobile-menu-button");
+      const menu = document.querySelector(".mobile-menu");
+      btn.addEventListener("click", () => {
+        menu.classList.toggle("hidden");
+      });
+    </script>
+  </nav>
+  
+```
+
+5. **Product List and Form Pages**
+
+### Home Page (home.html)
+
+```html
+{% extends 'base.html' %}
+{% block content %}
+  <h1 class="text-4xl font-bold text-center text-gray-800 mb-6">Product List</h1>
+
+  <div class="flex justify-end mb-6">
+    <a href="{% url 'create_product' %}">
+      <button class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300">
+        Add New Product
+      </button>
+    </a>
+  </div>
+
+  {% if products %}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {% for product in products %}
+        <div class="bg-white shadow-lg rounded-lg p-6 transform transition duration-300 hover:-translate-y-2 hover:shadow-2xl">
+          <h2 class="text-xl font-bold">{{ product.name }}</h2>
+          <p class="text-gray-700">Price: ${{ product.price }}</p>
+          <p class="text-gray-600">{{ product.description }}</p>
+          <div class="mt-4 flex justify-between">
+            <a href="{% url 'edit_product' product.pk %}" class="bg-yellow-400 hover:bg-yellow-500 text-white font-bold py-2 px-4 rounded-lg">Edit</a>
+            <a href="{% url 'delete_product' product.pk %}" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg">Delete</a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="flex flex-col items-center justify-center min-h-[24rem]">
+      <img src="{% static 'images/no-products.png' %}" alt="No products" class="w-32 h-32 mb-4"/>
+      <p class="text-center text-gray-600">No products available.</p>
+    </div>
+  {% endif %}
+
+  <div class="border-t border-gray-200 pt-4 mt-8">
+    <div class="text-left">
+      <p class="text-gray-700 font-semibold">Developed by: {{ developer_name }}</p>
+      <p class="text-gray-700">Class: {{ class_name }}</p>
+      <p class="text-gray-700">Last Login Session: {{ last_login }}</p>
+    </div>
+  </div>
+{% endblock %}
+```
+
+6. **Styling with Tailwind CSS**
+
+- Hover effects on product cards.
+- Responsive layout using grid and flexbox utilities.
+- Neat buttons with rounded corners and transitions.
+- Clean page layout with containers and padding.

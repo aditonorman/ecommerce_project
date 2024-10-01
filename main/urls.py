@@ -4,6 +4,9 @@ from .views import home, create_product, show_xml, show_json, show_xml_by_id, sh
 from main.views import register
 from main.views import login_user
 from main.views import logout_user
+from .views import edit_product
+from .views import delete_product
+
 
 
 
@@ -19,6 +22,8 @@ urlpatterns = [
     path('register/', register, name='register'),
     path('accounts/login/', login_user, name='login'),  # Updated URL for login
     path('logout/', logout_user, name='logout'),
+    path('edit-product/<uuid:id>/', edit_product, name='edit_product'),
+    path('delete-product/<uuid:id>/', delete_product, name='delete_product'),
 ]
 
 
