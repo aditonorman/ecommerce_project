@@ -1132,23 +1132,39 @@ urlpatterns = [
 
 ```html
 {% extends 'base.html' %}
+
+{% block meta %}
+<title>Login</title>
+{% endblock meta %}
+
 {% block content %}
-  <div class="min-h-screen flex items-center justify-center w-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-md w-full space-y-8">
-      <h2 class="text-3xl font-extrabold text-center text-gray-900">Login to your account</h2>
-      <form method="POST" class="mt-8 space-y-6">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-md">Login</button>
-      </form>
-      <div class="text-center mt-4">
-        <p>Don't have an account? 
-          <a href="{% url 'register' %}" class="text-indigo-600 hover:text-indigo-800">Register Now</a>
-        </p>
-      </div>
+<div class="min-h-screen flex items-center justify-center w-screen bg-blue-50 py-12 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-md w-full space-y-8">
+    <div>
+      <h2 class="mt-6 text-center text-blue-800 text-3xl font-extrabold">Login to your account</h2>
     </div>
+    <form class="mt-8 space-y-6" method="POST" action="">
+      {% csrf_token %}
+      <div class="rounded-md shadow-sm -space-y-px">
+        <div>
+          <label for="username" class="sr-only">Username</label>
+          <input id="username" name="username" type="text" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-blue-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Username">
+        </div>
+        <div>
+          <label for="password" class="sr-only">Password</label>
+          <input id="password" name="password" type="password" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-blue-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Password">
+        </div>
+      </div>
+      <div>
+        <button type="submit" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400">
+          Sign in
+        </button>
+      </div>
+    </form>
   </div>
-{% endblock %}
+</div>
+{% endblock content %}
+
 ```
 
 ### Register Page (register.html)
@@ -1156,21 +1172,45 @@ urlpatterns = [
 ```html
 {% extends 'base.html' %}
 {% block content %}
-  <div class="min-h-screen flex items-center justify-center w-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-md w-full space-y-8">
-      <h2 class="text-3xl font-extrabold text-center text-gray-900">Create your account</h2>
-      <form method="POST" class="mt-8 space-y-6">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="w-full bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-md">Register</button>
-      </form>
-      <div class="text-center mt-4">
-        <p>Already have an account? 
-          <a href="{% url 'login' %}" class="text-indigo-600 hover:text-indigo-800">Login Here</a>
-        </p>
-      </div>
+  {% extends 'base.html' %}
+
+{% block meta %}
+<title>Register</title>
+{% endblock meta %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center bg-blue-50 py-12 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-md w-full space-y-8">
+    <div>
+      <h2 class="mt-6 text-center text-blue-800 text-3xl font-extrabold">Create your account</h2>
     </div>
+    <form class="mt-8 space-y-6" method="POST">
+      {% csrf_token %}
+      <div class="rounded-md shadow-sm -space-y-px">
+        {% for field in form %}
+          <div class="flex flex-col">
+            <label for="{{ field.id_for_label }}" class="mb-2 font-semibold text-gray-700">{{ field.label }}</label>
+            <div class="relative">
+              {{ field }}
+            </div>
+            {% if field.errors %}
+              {% for error in field.errors %}
+                <p class="mt-1 text-sm text-red-600">{{ error }}</p>
+              {% endfor %}
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+      <div>
+        <button type="submit" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400">
+          Register
+        </button>
+      </div>
+    </form>
   </div>
+</div>
+{% endblock content %}
+
 {% endblock %}
 ```
 
@@ -1178,12 +1218,15 @@ urlpatterns = [
 
 ```html
 <!-- navbar.html -->
-<nav class="bg-indigo-600 shadow-lg fixed top-0 left-0 z-40 w-screen">
+<nav class="bg-gray-800 shadow-lg fixed top-0 left-0 z-40 w-screen">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-16">
+        <!-- Brand Name -->
         <div class="flex items-center">
           <h1 class="text-2xl font-bold text-center text-white">E-Shop</h1>
         </div>
+
+        <!-- Desktop Menu -->
         <div class="hidden md:flex items-center">
           {% if user.is_authenticated %}
             <span class="text-gray-300 mr-4">Welcome, {{ user.username }}</span>
@@ -1199,6 +1242,8 @@ urlpatterns = [
             </a>
           {% endif %}
         </div>
+
+        <!-- Mobile Menu Button -->
         <div class="md:hidden flex items-center">
           <button class="mobile-menu-button">
             <svg class="w-6 h-6 text-white" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
@@ -1208,7 +1253,8 @@ urlpatterns = [
         </div>
       </div>
     </div>
-    <!-- Mobile menu -->
+
+    <!-- Mobile Menu -->
     <div class="mobile-menu hidden md:hidden px-4 w-full md:max-w-full">
       <div class="pt-2 pb-3 space-y-1 mx-auto">
         {% if user.is_authenticated %}
@@ -1226,6 +1272,7 @@ urlpatterns = [
         {% endif %}
       </div>
     </div>
+
     <script>
       const btn = document.querySelector("button.mobile-menu-button");
       const menu = document.querySelector(".mobile-menu");
@@ -1233,8 +1280,7 @@ urlpatterns = [
         menu.classList.toggle("hidden");
       });
     </script>
-  </nav>
-  
+</nav>
 ```
 
 5. **Product List and Form Pages**
@@ -1243,45 +1289,60 @@ urlpatterns = [
 
 ```html
 {% extends 'base.html' %}
-{% block content %}
-  <h1 class="text-4xl font-bold text-center text-gray-800 mb-6">Product List</h1>
+{% load static %}
 
+{% block content %}
+  <h1 class="text-5xl font-bold text-center text-gray-800 mb-8">Product List</h1>
+
+  <!-- Add New Product Button -->
   <div class="flex justify-end mb-6">
     <a href="{% url 'create_product' %}">
-      <button class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300">
+      <button class="bg-blue-200 hover:bg-blue-300 text-blue-800 font-bold py-2 px-6 rounded-lg transition duration-300 shadow-md">
         Add New Product
       </button>
     </a>
   </div>
 
+  <!-- Product list section -->
   {% if products %}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
       {% for product in products %}
-        <div class="bg-white shadow-lg rounded-lg p-6 transform transition duration-300 hover:-translate-y-2 hover:shadow-2xl">
-          <h2 class="text-xl font-bold">{{ product.name }}</h2>
-          <p class="text-gray-700">Price: ${{ product.price }}</p>
-          <p class="text-gray-600">{{ product.description }}</p>
-          <div class="mt-4 flex justify-between">
-            <a href="{% url 'edit_product' product.pk %}" class="bg-yellow-400 hover:bg-yellow-500 text-white font-bold py-2 px-4 rounded-lg">Edit</a>
-            <a href="{% url 'delete_product' product.pk %}" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg">Delete</a>
+        <div class="bg-blue-100 shadow-lg rounded-lg p-6 transform transition duration-300 hover:scale-105 hover:shadow-xl border border-blue-300">
+          <h2 class="text-2xl font-bold text-blue-800">{{ product.name }}</h2>
+          <p class="text-gray-700 mt-2">Price: ${{ product.price }}</p>
+          <p class="text-gray-600 mt-1">{{ product.description }}</p>
+          <div class="mt-6 flex justify-between">
+            <a href="{% url 'edit_product' product.pk %}" class="bg-yellow-200 hover:bg-yellow-300 text-yellow-800 font-bold py-2 px-4 rounded-lg transition duration-300">
+              Edit
+            </a>
+            <a href="{% url 'delete_product' product.pk %}" class="bg-red-200 hover:bg-red-300 text-red-800 font-bold py-2 px-4 rounded-lg transition duration-300">
+              Delete
+            </a>
           </div>
         </div>
       {% endfor %}
     </div>
   {% else %}
     <div class="flex flex-col items-center justify-center min-h-[24rem]">
-      <img src="{% static 'images/no-products.png' %}" alt="No products" class="w-32 h-32 mb-4"/>
+      <img src="{% static 'image/as.gif' %}" alt="No products" class="w-32 h-32 mb-4"/>
       <p class="text-center text-gray-600">No products available.</p>
     </div>
   {% endif %}
 
-  <div class="border-t border-gray-200 pt-4 mt-8">
-    <div class="text-left">
-      <p class="text-gray-700 font-semibold">Developed by: {{ developer_name }}</p>
-      <p class="text-gray-700">Class: {{ class_name }}</p>
-      <p class="text-gray-700">Last Login Session: {{ last_login }}</p>
+  <!-- Developer, Class, and Last Login Info in Line with Flexbox -->
+  <div class="mt-12 flex items-start justify-between bg-blue-50 border-2 border-blue-300 rounded-lg p-6 shadow-lg">
+    <!-- Left Side: Developer and Class Info -->
+    <div>
+      <p class="text-gray-800 font-semibold">Developed by: <span class="font-bold text-blue-600">{{ developer_name }}</span></p>
+      <p class="text-gray-800 font-semibold">Class: <span class="font-bold text-blue-600">{{ class_name }}</span></p>
+    </div>
+
+    <!-- Right Side: Last Login Info -->
+    <div class="ml-4 bg-white border-2 border-blue-300 rounded-lg p-4 shadow-lg">
+      <p class="text-gray-800">Last Login Session: <span class="font-bold text-blue-600">{{ last_login }}</span></p>
     </div>
   </div>
+
 {% endblock %}
 ```
 

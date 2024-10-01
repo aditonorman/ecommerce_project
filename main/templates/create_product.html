@@ -1,30 +1,41 @@
 {% extends 'base.html' %}
-
-{% block meta %}
-<title>Add Product</title>
-{% endblock meta %}
+{% load static %}
 
 {% block content %}
-<div class="min-h-screen flex items-center justify-center bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
-  <div class="max-w-lg w-full">
-    <h1 class="text-3xl font-bold text-center mb-6">Add New Product</h1>
-    <form method="POST" class="bg-white shadow-md rounded-lg p-6 space-y-6">
+  <h1 class="text-5xl font-bold text-center text-blue-800 mb-8">Add New Product</h1>
+
+  <!-- Centered Form with Blue Pastel Border -->
+  <div class="max-w-lg mx-auto bg-blue-50 p-8 rounded-lg shadow-lg border border-blue-200">
+    <form method="POST">
       {% csrf_token %}
-      {% for field in form %}
-        <div class="flex flex-col">
-          <label for="{{ field.id_for_label }}" class="mb-2 font-semibold text-gray-700">{{ field.label }}</label>
-          {{ field }}
-          {% if field.errors %}
-            <p class="mt-1 text-sm text-red-600">{{ field.errors }}</p>
-          {% endif %}
-        </div>
-      {% endfor %}
+
+      <!-- Name Field -->
+      <div class="mb-6">
+        <label for="name" class="block text-lg font-semibold text-blue-700">Name</label>
+        <input type="text" name="name" id="name" 
+               class="w-full mt-2 p-3 border border-blue-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+      </div>
+
+      <!-- Price Field -->
+      <div class="mb-6">
+        <label for="price" class="block text-lg font-semibold text-blue-700">Price</label>
+        <input type="number" name="price" id="price" 
+               class="w-full mt-2 p-3 border border-blue-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+      </div>
+
+      <!-- Description Field -->
+      <div class="mb-6">
+        <label for="description" class="block text-lg font-semibold text-blue-700">Description</label>
+        <textarea name="description" id="description" rows="4" 
+                  class="w-full mt-2 p-3 border border-blue-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
+      </div>
+
+      <!-- Submit Button -->
       <div class="flex justify-center">
-        <button type="submit" class="bg-indigo-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-indigo-700 transition duration-300 ease-in-out">
+        <button type="submit" class="bg-blue-200 hover:bg-blue-300 text-blue-800 font-bold py-2 px-6 rounded-lg transition duration-300 shadow-md">
           Add Product
         </button>
       </div>
     </form>
   </div>
-</div>
-{% endblock content %}
+{% endblock %}

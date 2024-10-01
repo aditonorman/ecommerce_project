@@ -2,34 +2,40 @@
 {% load static %}
 
 {% block content %}
-  <div class="min-h-screen flex flex-col items-center justify-center bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-md w-full space-y-8">
-      <div>
-        <h2 class="text-center text-3xl font-extrabold text-gray-900">Edit Product</h2>
-      </div>
-      <form class="mt-8 space-y-6" method="POST">
-        {% csrf_token %}
-        <div class="rounded-md shadow-sm -space-y-px">
-          <div>
-            <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
-            <input id="name" name="name" type="text" value="{{ form.name.value }}" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Product Name">
-          </div>
-          <div>
-            <label for="price" class="block text-sm font-medium text-gray-700">Price</label>
-            <input id="price" name="price" type="number" value="{{ form.price.value }}" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Product Price">
-          </div>
-          <div>
-            <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
-            <textarea id="description" name="description" rows="3" class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">{{ form.description.value }}</textarea>
-          </div>
-        </div>
+  <h1 class="text-4xl font-bold text-center text-blue-800 mb-6">Edit Product</h1>
 
-        <div>
-          <button type="submit" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-            Edit Product
-          </button>
-        </div>
-      </form>
-    </div>
+  <!-- Centered Form with Blue Pastel Border -->
+  <div class="max-w-lg mx-auto bg-blue-50 p-8 rounded-lg shadow-lg border border-blue-200">
+    <form method="POST">
+      {% csrf_token %}
+      
+      <!-- Name Field -->
+      <div class="mb-4">
+        <label for="name" class="block text-lg font-semibold text-blue-700">Name</label>
+        <input type="text" name="name" id="name" value="{{ form.name.value }}" 
+               class="w-full mt-2 p-3 border border-blue-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+      </div>
+
+      <!-- Price Field -->
+      <div class="mb-4">
+        <label for="price" class="block text-lg font-semibold text-blue-700">Price</label>
+        <input type="number" name="price" id="price" value="{{ form.price.value }}" 
+               class="w-full mt-2 p-3 border border-blue-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+      </div>
+
+      <!-- Description Field -->
+      <div class="mb-4">
+        <label for="description" class="block text-lg font-semibold text-blue-700">Description</label>
+        <textarea name="description" id="description" rows="4" 
+                  class="w-full mt-2 p-3 border border-blue-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">{{ form.description.value }}</textarea>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="flex justify-center">
+        <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-lg transition duration-300 shadow-md">
+          Edit Product
+        </button>
+      </div>
+    </form>
   </div>
-{% endblock content %}
+{% endblock %}
