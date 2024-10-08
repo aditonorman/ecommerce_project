@@ -17,7 +17,14 @@ from django.shortcuts import render, get_object_or_404, redirect, reverse
 from .models import Product
 from .forms import ProductForm
 from django.http import HttpResponseRedirect
-
+from django.http import JsonResponse
+from .models import Product
+from django.core import serializers
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+from .models import Product
+from django.contrib import messages
+from django.utils.html import strip_tags
 
 
 
@@ -86,9 +93,13 @@ def login_user(request):
             login(request, user)
             response = HttpResponseRedirect(reverse('home'))
             response.set_cookie('last_login', str(datetime.datetime.now()))
-            return response   
+            return response
+        else:
+            # Add an error message if form is not valid
+            messages.error(request, "Invalid username or password. Please try again.")
     else:
         form = AuthenticationForm()
+    
     context = {'form': form}
     return render(request, 'login.html', context)
 
@@ -114,6 +125,40 @@ def delete_product(request, id):
     product.delete()
     return HttpResponseRedirect(reverse('home'))
 
+def show_products_json(request):
+    products = Product.objects.filter(user=request.user)
+    return JsonResponse(serializers.serialize('json', products), safe=False)
+
+from django.utils.html import strip_tags
+
+@csrf_exempt
+def add_product_ajax(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        price = request.POST.get('price')
+        description = request.POST.get('description')
+        user = request.user  # Assuming the product is linked to a user
+
+        # Create the new product
+        product = Product.objects.create(
+            name=name,
+            price=price,
+            description=description,
+            user=user
+        )
+
+        # Return the newly added product as JSON response
+        return JsonResponse({
+            'success': True,
+            'product': {
+                'id': product.id,
+                'name': product.name,
+                'price': product.price,
+                'description': product.description,
+            }
+        })
+    
+    return JsonResponse({'success': False})
 
 
 
