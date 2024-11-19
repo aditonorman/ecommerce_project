@@ -25,12 +25,25 @@ from django.http import JsonResponse
 from .models import Product
 from django.contrib import messages
 from django.utils.html import strip_tags
+from django.shortcuts import render
+
+from django.contrib.auth import authenticate, login as auth_login
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.models import User
+import json
+from django.views.decorators.csrf import csrf_exempt
+import json
+from django.http import JsonResponse
+from django.contrib.auth import logout as auth_logout
+from main.models import Product
 
 
 
 
 
 
+@csrf_exempt
 def create_product(request):
     form = ProductForm(request.POST or None)
     if form.is_valid() and request.method == "POST":
@@ -162,3 +175,36 @@ def add_product_ajax(request):
 
 
 
+@csrf_exempt
+def create_product_flutter(request):
+    if request.method == 'POST':
+        if not request.user.is_authenticated:
+            return JsonResponse({"status": "error", "message": "Authentication required."}, status=401)
+        
+        try:
+            # Parse the JSON body of the request
+            data = json.loads(request.body)
+            
+            # Validate incoming data
+            if not all(key in data for key in ["name", "price", "description"]):
+                return JsonResponse({"status": "error", "message": "Missing fields"}, status=400)
+            
+            # Create a new product entry
+            new_product = Product.objects.create(
+                user=request.user,  # Assuming the product is tied to a logged-in user
+                name=data["name"],
+                price=int(data["price"]),
+                description=data["description"]
+            )
+            
+            # Save the new product entry
+            new_product.save()
+            
+            return JsonResponse({"status": "success", "product_id": new_product.id}, status=201)
+        
+        except (ValueError, KeyError, json.JSONDecodeError) as e:
+            # Handle errors such as invalid JSON or missing data
+            return JsonResponse({"status": "error", "message": str(e)}, status=400)
+    else:
+        # Return an error for methods other than POST
+        return JsonResponse({"status": "error", "message": "Invalid request method"}, status=405)

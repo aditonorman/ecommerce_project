@@ -8,6 +8,7 @@ from .views import edit_product
 from .views import delete_product
 from .views import show_products_json
 from .views import add_product_ajax
+from .views import create_product_flutter
 
 
 
@@ -26,6 +27,7 @@ urlpatterns = [
     path('delete-product/<uuid:id>/', delete_product, name='delete_product'),
     path('show-products-json/', show_products_json, name='show_products_json'),
     path('add-product-ajax/', add_product_ajax, name='add_product_ajax'),
+    path('create-flutter/', create_product_flutter, name='create-flutter'),
 ]
 
 
